@@ -89,7 +89,7 @@ ynh_add_nginx_config
 
 # Configure nginx settings
 folder_path=${path%/}
-sudo sed -i "s@YNH_EXAMPLE_PATH@$path@g" ../conf/nginx.conf
+sudo sed -i "s@YNH_EXAMPLE_PATH@$path_url@g" ../conf/nginx.conf
 # If path is only / (without subfolder), add trailing slash to alias
 alias_path=$src_path
 nginx_conf="../conf/nginx.conf"
