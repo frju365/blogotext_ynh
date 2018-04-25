@@ -87,17 +87,12 @@ ynh_setup_source "$final_path"
 # Create a dedicated nginx config
 ynh_add_nginx_config
 
-# Configure nginx settings
-folder_path=${path_url%/}
-sudo sed -i "s@YNH_EXAMPLE_PATH@$path_url@g" ../conf/nginx.conf
-# If path is only / (without subfolder), add trailing slash to alias
-alias_path=$src_path
-nginx_conf="../conf/nginx.conf"
-[ "$path" == '/' ] && alias_path=$alias_path'/'
-sudo sed -i "s@YNH_EXAMPLE_ALIAS@$alias_path@g" $nginx_conf
-sudo sed -i "s@YNH_EXAMPLE_FOLDER@$folder_path@g" $nginx_conf
-sudo cp $nginx_conf /etc/nginx/conf.d/$domain.d/$app.conf
+#=================================================
+# PHP-FPM CONFIGURATION
+#=================================================
 
+# Create a dedicated php-fpm config
+ynh_add_fpm_config
 
 #=================================================
 # CREATE DEDICATED USER
@@ -106,33 +101,22 @@ sudo cp $nginx_conf /etc/nginx/conf.d/$domain.d/$app.conf
 # Create a system user
 ynh_system_user_create $app
 
-# Save app settings
-ynh_app_setting_set "$app" admin "$admin"
-ynh_app_setting_set "$app" is_public "$is_public"
-
 #=================================================
-# PHP-FPM CONFIGURATION
+# SETUP APPLICATION WITH CURL
 #=================================================
 
-# Create a dedicated php-fpm config
-ynh_add_fpm_config
-
-# FINAL INSTALL?
 # Set right permissions for curl install
-#chown -R $app: $final_path
+chown -R $app: $final_path
 
 # Set the app as temporarily public for curl call
-ynh_app_setting_set $app skipped_uris "/"
-
+#ynh_app_setting_set $app skipped_uris "/"
 # Reload SSOwat config
-yunohost app ssowatconf
+#yunohost app ssowatconf
 
 # Reload Nginx
-systemctl reload nginx
+#systemctl reload nginx
 
 # Installation with curl
-# FIXME 
-# Blogotext needs to use a browser because of security, it seems to at least
 #ynh_local_curl "/INSTALL_PATH" "key1=value1" "key2=value2" "key3=value3"
 
 #=================================================
@@ -140,7 +124,7 @@ systemctl reload nginx
 #=================================================
 
 # Calculate and store the config file checksum into the app settings
-ynh_store_file_checksum "$final_path/CONFIG_FILE"
+#ynh_store_file_checksum "$final_path/CONFIG_FILE"
 
 #=================================================
 # GENERIC FINALIZATION
@@ -151,21 +135,12 @@ ynh_store_file_checksum "$final_path/CONFIG_FILE"
 # Allow only allowed users to access admin panel
 ynh_app_setting_set "$app" protected_uris "/admin/"
 
-# Set permissions to app files
-chown -R root: $final_path
-
 #=================================================
 # SETUP LOGROTATE
 #=================================================
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate
-
-#=================================================
-# ADVERTISE SERVICE IN ADMIN PANEL
-#=================================================
-
-yunohost service add NAME_INIT.D --log "/var/log/FILE.log"
 
 #=================================================
 # SETUP SSOWAT
