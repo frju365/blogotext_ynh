@@ -118,6 +118,8 @@ chown -R $app: $final_path
 
 # Installation with curl
 #ynh_local_curl "/INSTALL_PATH" "key1=value1" "key2=value2" "key3=value3"
+ynh_local_curl "https://blogotext.yunohost.support/admin/install.php?s=2&l=fr" "identifiant=$admin" "mdp=$password" "racine=$domain$path_url" "submit=OK"
+ynh_local_curl "https://blogotext.yunohost.support/admin/install.php?s=3&l=fr" "
 
 #=================================================
 # STORE THE CHECKSUM OF THE CONFIG FILE
